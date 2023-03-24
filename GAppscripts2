@@ -46,12 +46,16 @@ function doPost (e) {
   }
 }
 
-function uploadFile(fileData) {
-  const folder = getOrCreateFolder(folderName);
-  const blob = Utilities.newBlob(Utilities.base64Decode(fileData), null, 'uploaded_file');
-  const file = folder.createFile(blob);
-  return file.getUrl();
+function uploadFile (fileBlob) {
+  const drive = DriveApp
+  const folder = drive.getFolderById(FOLDER_ID)
+  const file = folder.createFile(fileBlob)
+
+  Logger.log('Uploaded file: ' + file.getName() + ', URL: ' + file.getUrl())
+
+  return file.getUrl()
 }
+
 
 function getOrCreateFolder(folderName) {
   const rootFolder = DriveApp.getRootFolder();
