@@ -1,73 +1,59 @@
-const sheetName = 'Form2'
+const sheetName = 'Geolocation';
 const scriptProp = PropertiesService.getScriptProperties();
-const folderName = e.parameter.Name || 'form_images';
+const folderName = 'Form Uploads'; // The name of the folder to store the uploaded files
 
-
-function initialSetup () {
+function initialSetup() {
   const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   scriptProp.setProperty('key', activeSpreadsheet.getId());
 }
 
-function doPost (e) {
-  const lock = LockService.getScriptLock()
-  lock.tryLock(10000)
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  lock.tryLock(10000);
 
   try {
-    const doc = SpreadsheetApp.openById(scriptProp.getProperty('key'))
-    const sheet = doc.getSheetByName(sheetName)
+    const doc = SpreadsheetApp.openById(scriptProp.getProperty('key'));
+    const sheet = doc.getSheetByName(sheetName);
 
-    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
-    const nextRow = sheet.getLastRow() + 1
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const nextRow = sheet.getLastRow() + 1;
+
+    // Upload the file to the Google Drive folder and get the file ID
+    const file = e.parameter.Upload;
+    const folder = getOrCreateFolder(folderName);
+    const fileBlob = Utilities.newBlob(file, e.postData.contentsType, e.parameter.Name);
+    const fileID = folder.createFile(fileBlob).getId();
 
     const newRow = headers.map(function(header) {
-      if (header === 'File URL') {
-        const fileBlob = e.parameter['file']
-        if (fileBlob) {
-          const fileUrl = uploadFile(fileBlob)
-          return fileUrl
-        } else {
-          console.error('No file found in request.')
-          return ''
-        }
+      if (header === 'Date') {
+        return new Date();
+      } else if (header === 'Upload') {
+        return fileID;
       } else {
-        return header === 'Date' ? new Date() : e.parameter[header]
+        return e.parameter[header];
       }
-    })
+    });
 
-    sheet.getRange(nextRow, 1, 1, newRow.length).setValues([newRow])
+    sheet.getRange(nextRow, 1, 1, newRow.length).setValues([newRow]);
 
     return ContentService
       .createTextOutput(JSON.stringify({ 'result': 'success', 'row': nextRow }))
-      .setMimeType(ContentService.MimeType.JSON)
-  }
-
-  catch (e) {
-    console.error(e)
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (e) {
     return ContentService
       .createTextOutput(JSON.stringify({ 'result': 'error', 'error': e }))
-      .setMimeType(ContentService.MimeType.JSON)
-  }
-
-  finally {
-    lock.releaseLock()
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
   }
 }
 
-function uploadFile (fileBlob) {
-  const drive = DriveApp
-  const folder = getOrCreateFolder(folderName, e)
-  const file = folder.createFile(fileBlob)
-
-  Logger.log('Uploaded file: ' + file.getName() + ', URL: ' + file.getUrl())
-
-  return file.getUrl()
-}
-
-function getOrCreateFolder(folderName, e) {
-  const rootFolder = DriveApp.getRootFolder();
-  let folder = rootFolder.getFoldersByName(folderName).next();
-  if (!folder) {
-    folder = rootFolder.createFolder(folderName);
+// Create a folder with the given name if it does not exist, otherwise return the folder
+function getOrCreateFolder(folderName) {
+  const folders = DriveApp.getFoldersByName(folderName);
+  if (folders.hasNext()) {
+    return folders.next();
+  } else {
+    return DriveApp.createFolder(folderName);
   }
-  return folder;
 }
