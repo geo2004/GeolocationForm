@@ -6,9 +6,11 @@ const scriptProp = PropertiesService.getScriptProperties();
 const folderName = e.parameter.Name || 'form_images';
 
 
-function initialSetup () {
+function initialSetup() {
   const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   scriptProp.setProperty('key', activeSpreadsheet.getId());
+  const folder = getOrCreateFolder(folderName);
+  scriptProp.setProperty('FOLDER_ID', folder.getId());
 }
 
 function doPost (e) {
@@ -57,14 +59,15 @@ function doPost (e) {
 }
 
 function uploadFile (fileBlob) {
-  const drive = DriveApp
-  const folder = drive.getFolderById(FOLDER_ID)
-  const file = folder.createFile(fileBlob)
+  const drive = DriveApp;
+  const folder = getOrCreateFolder(folderName);
+  const file = folder.createFile(fileBlob);
 
-  Logger.log('Uploaded file: ' + file.getName() + ', URL: ' + file.getUrl())
+  Logger.log('Uploaded file: ' + file.getName() + ', URL: ' + file.getUrl());
 
-  return file.getUrl()
+  return file.getUrl();
 }
+
 
 function getOrCreateFolder(folderName) {
   const rootFolder = DriveApp.getRootFolder();
