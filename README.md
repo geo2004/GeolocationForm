@@ -11,7 +11,7 @@ Here are the steps to how to use the code.
 3. From the GSheets Menu, go to Extension > App Scripts. 
 
 4. Delete the initial function, and copy/paste the GoogleAppScripts file in this repo. 
-5. Pay attention to SheetName constructor, the SheetName should be matched with the Google Spreadsheet you are working on. 
+5. Pay attention to SheetName constructor, the SheetName should be matched with the Sheet Name (equivalent with tab name in MS Excel, do not confuse it with Gsheet filename) you are working on. 
 
 5. Run the Initial Setup Function. Image description as follow. 
 
