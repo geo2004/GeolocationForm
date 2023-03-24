@@ -1,0 +1,63 @@
+const sheetName = 'Geolocation';
+const scriptProp = PropertiesService.getScriptProperties();
+const folderName = 'Uploaded Files';
+
+function initialSetup () {
+  const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  scriptProp.setProperty('key', activeSpreadsheet.getId());
+}
+
+function doPost (e) {
+  const lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+
+  try {
+    const doc = SpreadsheetApp.openById(scriptProp.getProperty('key'));
+    const sheet = doc.getSheetByName(sheetName);
+
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const nextRow = sheet.getLastRow() + 1;
+
+    const newRow = headers.map(function(header) {
+      if (header === 'Date') {
+        return new Date();
+      } else if (header === 'File URL') {
+        return uploadFile(e.parameter['file']);
+      } else {
+        return e.parameter[header];
+      }
+    });
+
+    sheet.getRange(nextRow, 1, 1, newRow.length).setValues([newRow]);
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ 'result': 'success', 'row': nextRow }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  catch (e) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ 'result': 'error', 'error': e }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  finally {
+    lock.releaseLock();
+  }
+}
+
+function uploadFile(fileData) {
+  const folder = getOrCreateFolder(folderName);
+  const blob = Utilities.newBlob(Utilities.base64Decode(fileData), null, 'uploaded_file');
+  const file = folder.createFile(blob);
+  return file.getUrl();
+}
+
+function getOrCreateFolder(folderName) {
+  const rootFolder = DriveApp.getRootFolder();
+  let folder = rootFolder.getFoldersByName(folderName).next();
+  if (!folder) {
+    folder = rootFolder.createFolder(folderName);
+  }
+  return folder;
+}
