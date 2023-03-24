@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Google Sheet Form</title>
+    <style>
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      input[type="text"],
+      input[type="email"] {
+        padding: 0.5rem;
+        border: 2px solid gray;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        width: 100%;
+      }
+
+      button[type="submit"] {
+        padding: 0.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        background-color: blue;
+        color: white;
+        cursor: pointer;
+      }
+
+      button[type="submit"]:hover {
+        background-color: darkblue;
+      }
+    </style>
+    <script>
+      function getLocation() {
+        // Check if the browser supports geolocation
+        if (navigator.geolocation) {
+          // Get the current position of the user
+          navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+          alert("Geolocation is not supported by this browser.");
+        }
+      }
+
+      function showPosition(position) {
+        // Get the latitude and longitude values from the geolocation data
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        // Populate the input field with the latitude and longitude values
+        document.getElementById("Latitude").value = latitude;
+        document.getElementById("Longitude").value = longitude;
+      }
+    </script>
+  </head>
+  <body>
+    <form action="YOUR WEBAPP URL" method="post">
+      <input name="Email" type="email" placeholder="Email" required>
+      <input name="Name" type="text" placeholder="Name" required>
+      <input name="Description" type="text" placeholder="Description" required>
+      <input type="text" id="Latitude" name="Latitude" placeholder="Latitude">
+      <input type="text" id="Longitude" name="Longitude" placeholder="Longitude">
+      <button type="button" onclick="getLocation()">Get Location</button>
+      <button type="submit">Send</button>
+    </form>
+  </body>
+</html>
