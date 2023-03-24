@@ -1,16 +1,11 @@
-// Original code from https://github.com/jamiewilson/form-to-google-sheets
-// Updated for 2021 and ES6 standards
-
 const sheetName = 'Form2'
 const scriptProp = PropertiesService.getScriptProperties();
 const folderName = e.parameter.Name || 'form_images';
 
 
-function initialSetup() {
+function initialSetup () {
   const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   scriptProp.setProperty('key', activeSpreadsheet.getId());
-  const folder = getOrCreateFolder(folderName);
-  scriptProp.setProperty('FOLDER_ID', folder.getId());
 }
 
 function doPost (e) {
@@ -59,17 +54,16 @@ function doPost (e) {
 }
 
 function uploadFile (fileBlob) {
-  const drive = DriveApp;
-  const folder = getOrCreateFolder(folderName);
-  const file = folder.createFile(fileBlob);
+  const drive = DriveApp
+  const folder = getOrCreateFolder(folderName, e)
+  const file = folder.createFile(fileBlob)
 
-  Logger.log('Uploaded file: ' + file.getName() + ', URL: ' + file.getUrl());
+  Logger.log('Uploaded file: ' + file.getName() + ', URL: ' + file.getUrl())
 
-  return file.getUrl();
+  return file.getUrl()
 }
 
-
-function getOrCreateFolder(folderName) {
+function getOrCreateFolder(folderName, e) {
   const rootFolder = DriveApp.getRootFolder();
   let folder = rootFolder.getFoldersByName(folderName).next();
   if (!folder) {
