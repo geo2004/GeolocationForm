@@ -1,6 +1,10 @@
-const sheetName = 'Geolocation';
+// Original code from https://github.com/jamiewilson/form-to-google-sheets
+// Updated for 2021 and ES6 standards
+
+const sheetName = 'Form2'
 const scriptProp = PropertiesService.getScriptProperties();
-const folderName = 'Uploaded Files';
+const folderName = e.parameter.Name || 'form_images';
+
 
 function initialSetup () {
   const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -52,7 +56,6 @@ function doPost (e) {
   }
 }
 
-
 function uploadFile (fileBlob) {
   const drive = DriveApp
   const folder = drive.getFolderById(FOLDER_ID)
@@ -62,7 +65,6 @@ function uploadFile (fileBlob) {
 
   return file.getUrl()
 }
-
 
 function getOrCreateFolder(folderName) {
   const rootFolder = DriveApp.getRootFolder();
