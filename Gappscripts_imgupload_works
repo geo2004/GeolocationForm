@@ -10,8 +10,7 @@ function doPost(e){
     let newFile = folder.createFile(blob);
     let link = newFile.getUrl();
     let lr = sheet.getLastRow();
-    sheet.getRange(lr+1,1).setValue(obj.name);
-    sheet.getRange(lr+1,2).setValue(link);
+sheet.getRange(lr+1, 7, 1, 2).setValues([[obj.name, link]]);
     return ContentService.createTextOutput("image uploaded")
   }catch(err){
     return ContentService.createTextOutput(err)
