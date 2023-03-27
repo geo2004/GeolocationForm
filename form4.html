@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<form>
+  <input type="file" accept="image/*" name="image">
+  <button type="submit">Upload</button>
+</form>
+<script>
+  let form = document.querySelector("form");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    let file = form.elements.image.files[0];
+    let fr = new FileReader();
+    fr.addEventListener("loadend", () => {
+      let res = fr.result;
+      let spt = res.split("base64,")[1];
+      let obj = {
+        base64: spt,
+        type: file.type,
+        name: file.name
+      };
+      fetch("https://script.google.com/macros/s/AKfycbwhdTTbfv1IHcDCz_TIfbcPqwsXwTrrAhJkDpcwTGcq7qex3trN9AYgwFZciyPFk8A1/exec", {
+        method: "POST",
+        body: JSON.stringify(obj)
+      })
+      .then(r => r.text())
+      .then(data => console.log(data));
+    });
+    fr.readAsDataURL(file);
+  });
+</script>
+</body>
+</html>
