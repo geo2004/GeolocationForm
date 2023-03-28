@@ -68,5 +68,9 @@ When you hit the Get Location Button, browser or device will ask about your devi
 Here is the example of inputted data in GSheets
          
 ![image](https://user-images.githubusercontent.com/46329778/227415654-60138363-39e2-4f4a-ba95-87b0e0d1fd81.png)
+         
+------------------------------------------------------------------------------------------------------
+         
+## I also added some additional feature in the form such as capability to upload file to GDrive, insert the geolocation to EXIF metadata of the uploaded files and some more at this repo [GeolocationForm v2](https://github.com/geo2004/GeolocationForm-v2)
 
 
